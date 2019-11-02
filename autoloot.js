@@ -1,3 +1,17 @@
+// ==UserScript==
+// @name        Melvor Idle Auto Loot
+// @namespace   http://www.reddit.com/r/melvoridle
+// @description Launch Melvor Idle Auto Loot
+// @include     *https://melvoridle.com/*
+// @include     file:///*kitten-game*
+// @version     0.0.1
+// @grant       none
+// @copyright   2019, BrasilianEngineer
+// ==/UserScript==
+
+
+
+
 var autoLoot = function() {
 	
 var autoLoopTimer;
