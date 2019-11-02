@@ -1,19 +1,21 @@
+var autoLoot = function() {
+	
+var autoLoopTimer;
 var autoLootOptions = {
 	gatherCombatLoot: false,
 	eatCombatFood: false,
 	eatThievingFood: false,
 	autoRunTimer: 5
 }
-renderHeaderButton();
-
-function runAutomationLoop() {
+	
+var runAutomationLoop = function () {
 	eatCombatFoodIfNecessary();
 	eatThievingFoodIfNecessary();
 	gatherCombatLoot();
 }
 
-function eatCombatFoodIfNecessary() {
-	if (!autoClickerOptions.eatCombatFood) return;
+var eatCombatFoodIfNecessary = function () {
+	if (!autoLootOptions.eatCombatFood) return;
 	
 	var hpCurrentLabel = $("#combat-player-hitpoints-current");
 	var hpMaxLabel = $("#combat-player-hitpoints-max");
@@ -28,8 +30,8 @@ function eatCombatFoodIfNecessary() {
 	}
 }
 
-function eatThievingFoodIfNecessary() {
-	if (!autoClickerOptions.eatThievingFood) return;
+var eatThievingFoodIfNecessary = function () {
+	if (!autoLootOptions.eatThievingFood) return;
 	
 	var hpCurrentLabel = $("#thieving-player-hitpoints-current");
 	var hpMaxLabel = $("#thieving-player-hitpoints-max");
@@ -44,17 +46,17 @@ function eatThievingFoodIfNecessary() {
 	}
 }
 
-function gatherCombatLoot() {
-if (!autoClickerOptions.gatherLoot) return;
+var gatherCombatLoot = function () {
+if (!autoLootOptions.gatherLoot) return;
 
 	var container = $("#combat-loot-container");
 	container.find("button").each(function () {
 		$(this).click();
 }
 
-function renderHeaderButton() {
+var renderHeaderButton = function () {
 	if ($("#auto-loot-settings-button").length) return;
-
+	
 	var containerRef = $(".content-side ul.nav-main li.nav-main-heading:last");
 	var html = [
 	'<li class="nav-main-item">',
@@ -67,7 +69,7 @@ function renderHeaderButton() {
 	containerRef.appendBefore($(html));
 }
 
-function showAutoLootSettings() {
+var showAutoLootSettings = function () {
 	var container = $("#auto-loot-settings-container");
 	if (!container.length) {
 		container = renderAutoLootSettings();
@@ -76,18 +78,18 @@ function showAutoLootSettings() {
 	syncSettingButtons();
 }
 
-function hideAutoLootSettings() {
+var hideAutoLootSettings = function () {
 	container.hide();
 }
 
-function toggleAutoLootSetting(sender) {
+var toggleAutoLootSetting = function (sender) {
 	var setting = $(sender).data("setting");
 	var active = autoLootOptions[setting];
 	active = !active;
 	autoLootOptions[setting, active];
 }
 
-function syncSettingButtons() {
+var syncSettingButtons = function () {
 	$("#auto-loot-enabled-settings").find("button").each(function() {
 		var btn = $(this);
 		var active = autoLootOptions[btn.data("setting")];
@@ -99,7 +101,7 @@ function syncSettingButtons() {
 	});
 }
 
-function renderAutoLootSettings() {
+var renderAutoLootSettings = function () {
 	var html = [
 '<div id="auto-loot-settings-container" style="display: none">',
 '<div class="row row-deck">',
@@ -122,9 +124,18 @@ function renderAutoLootSettings() {
 '</div>',
 '</div>',
 '</div>'
-	].join();
+	].join("");
 	
 	var container = $(html);
 	$("#main-container").prepend(container);
 	return container;
 }
+var startAutoLoop = function () {
+	autoLoopTimer = setTimeout(runAutomationLoop, autoLootOptions.autoRunTimer * 1000);
+}
+
+renderHeaderButton();
+
+}
+
+autoLoot();
