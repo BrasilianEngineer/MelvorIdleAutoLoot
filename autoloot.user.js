@@ -3,6 +3,8 @@
 // @namespace    http://www.reddit.com/r/melvoridle
 // @version      0.1.0
 // @description  Melvor Idle Auto Loot for Melvor Idle v0.08.2
+// @downloadUrl  https://cdn.jsdelivr.net/gh/BrasilianEngineer/MelvorIdleAutoLoot@master/autoloot.user.js
+// @updateUrl    https://cdn.jsdelivr.net/gh/BrasilianEngineer/MelvorIdleAutoLoot@master/autoloot.user.js
 // @author       BrasilianEngineer
 // @match        https://melvoridle.com/
 // @grant        none
