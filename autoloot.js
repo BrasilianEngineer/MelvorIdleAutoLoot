@@ -54,14 +54,17 @@ if (!autoClickerOptions.gatherLoot) return;
 
 function renderHeaderButton() {
 	if ($("#auto-loot-settings-button").length) return;
-	
+
 	var containerRef = $(".content-side ul.nav-main li.nav-main-heading:last");
-	containerRef.appendBefore($("<li class=\"nav-main-item\">
-		<a class=\"nav-main-link\" href=\"javascript:showAutoLootSettings();\">
-			<img class=\"nav-img\" src=\"assets/media/main/question.svg\">
-			<span class=\"nav-main-link-name\">AutoLoot Settings</span>
-		</a>
-	</li>"));
+	var html = [
+	'<li class="nav-main-item">',
+	'<a class="nav-main-link" href="javascript:showAutoLootSettings();">',
+	'<img class="nav-img" src="assets/media/main/question.svg">',
+	'<span class="nav-main-link-name">AutoLoot Settings</span>',
+	'</a>',
+	'</li>'
+	].join("");
+	containerRef.appendBefore($(html));
 }
 
 function showAutoLootSettings() {
