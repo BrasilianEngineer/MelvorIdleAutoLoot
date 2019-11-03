@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Melvor Idle Auto Loot
 // @namespace    http://www.reddit.com/r/melvoridle
-// @version      0.1.0
+// @version      0.1.1
 // @description  Melvor Idle Auto Loot for Melvor Idle v0.08.2
 // @downloadUrl  https://cdn.jsdelivr.net/gh/BrasilianEngineer/MelvorIdleAutoLoot@master/autoloot.user.js
 // @updateUrl    https://cdn.jsdelivr.net/gh/BrasilianEngineer/MelvorIdleAutoLoot@master/autoloot.user.js
 // @author       BrasilianEngineer
-// @match        https://melvoridle.com/
+// @match        *melvoridle.com/*
 // @grant        none
 // @copyright   2019, BrasilianEngineer
 // ==/UserScript==
@@ -20,6 +20,8 @@
         gatherCombatLoot: false,
         eatCombatFood: false,
         eatThievingFood: false,
+		autoCookingEnabled: false,
+		autoRunMode: "",
         autoRunTimer: 5
     }
 
@@ -27,6 +29,8 @@
         eatCombatFoodIfNecessary();
         eatThievingFoodIfNecessary();
         gatherCombatLoot();
+        cook();
+        fire();
 
         autoLoopTimer = setTimeout(runAutomationLoop, autoLootOptions.autoRunTimer * 1000);
     }
@@ -71,7 +75,7 @@
     }
 
     var gatherCombatLoot = function () {
-        if (!autoLootOptions.gatherLoot) return;
+        if (!autoLootOptions.gatherCombatLoot) return;
 
         var container = $("#combat-loot-container");
         container.find("button").each(function () {
@@ -79,6 +83,77 @@
             $(this).click();
         });
     }
+
+	var cook = function () {
+		if (autoLootOptions.autoRunMode !== "cooking") return;
+        if (!$("#auto-loot-cook-button").is(":visible")) return;
+
+		// Currently cooking something?
+		if ($("#cook-count").text() !== "-") return;
+
+        console.log("Cooking Food");
+		$("#auto-loot-cook-button").next().click();
+	}
+
+	var fire = function () {
+		if (autoLootOptions.autoRunMode !== "fire") return;
+        if (!$("#auto-loot-fire-button").is(":visible")) return;
+
+		// Currently cooking something?
+		if ($("#skill-fm-burn-progress").width() !== 0) return;
+
+        console.log("Burning Log");
+		$("#auto-loot-fire-button").next().click();
+	}
+
+	var enableFireButton = function () {
+		if ($("#auto-loot-fire-button").length) return;
+
+		var container = $("#skill-fm-burn-progress").parent().parent();
+		var button = $('<button type="button" id="auto-loot-fire-button" class="btn btn-block btn-lg btn-info mb-1">Auto Cook</button>');
+		container.prepend(button);
+		button.on("click", startFire);
+	}
+
+	var disableFireButton = function () {
+		$("#auto-loot-fire-button").remove();
+	}
+
+	function startFire() {
+		var button = $("#auto-loot-fire-button");
+		if (autoLootOptions.autoRunMode === "fire") {
+			autoLootOptions.autoRunMode = "";
+			button.addClass("btn-info").removeClass("btn-success")
+		} else {
+			autoLootOptions.autoRunMode = "fire";
+			button.addClass("btn-success").removeClass("btn-info")
+		}
+	}
+
+	var enableCookingButton = function () {
+		if ($("#auto-loot-cook-button").length) return;
+
+		var container = $("#cook-button-qty-all").parent();
+		var button = $('<button type="button" id="auto-loot-cook-button" class="btn btn-block btn-info mb-1">Auto Cook</button>');
+		container.prepend(button);
+		button.on("click", startCooking);
+	}
+
+	var disableCookingButton = function () {
+		$("#auto-loot-cook-button").remove();
+	}
+
+	function startCooking() {
+		var button = $("#auto-loot-cook-button");
+		if (autoLootOptions.autoRunMode === "cooking") {
+			autoLootOptions.autoRunMode = "";
+			button.addClass("btn-info").removeClass("btn-success")
+		} else {
+			autoLootOptions.autoRunMode = "cooking";
+			button.addClass("btn-success").removeClass("btn-info")
+		}
+	}
+
 
     var showAutoLootSettings = function () {
         var container = $("#auto-loot-settings-container");
@@ -108,6 +183,18 @@
         } else {
             $(this).removeClass("btn-primary").addClass("btn-outline-primary");
         }
+
+		// Enable/Disable Relevant Buttons
+		if (autoLootOptions.autoCookingEnabled) {
+			enableCookingButton();
+		} else {
+			disableCookingButton();
+		}
+		if (autoLootOptions.autoFireEnabled) {
+			enableFireButton();
+		} else {
+			disableFireButton();
+		}
     }
 
     var syncSettingButtons = function () {
@@ -140,6 +227,8 @@
             '<button type="button" data-setting="gatherCombatLoot" class="btn btn-outline-primary js-tooltip-enabled auto-loot-button" data-toggle="tooltip" data-html="true" data-placement="bottom" title="Gather all loot from Combat!"><img src="assets/media/bank/leather.svg" height="32px" width="32px"></button>',
             '<button type="button" data-setting="eatCombatFood" class="btn btn-outline-primary js-tooltip-enabled auto-loot-button" data-toggle="tooltip" data-html="true" data-placement="bottom" title="Eat food to replenish your health during combat!"><img src="assets/media/skills/combat/attack.svg" height="32px" width="32px"><img src="assets/media/bank/shrimp_cooked.svg" height="32px" width="32px"></button>',
             '<button type="button" data-setting="eatThievingFood" class="btn btn-outline-primary js-tooltip-enabled auto-loot-button" data-toggle="tooltip" data-html="true" data-placement="bottom" title="Eat food to replenish your health during thieving!"><img src="assets/media/skills/thieving/thieving.svg" height="32px" width="32px"><img src="assets/media/bank/sardine_cooked.svg" height="32px" width="32px"></button>',
+            '<button type="button" data-setting="autoCookingEnabled" class="btn btn-outline-primary js-tooltip-enabled auto-loot-button" data-toggle="tooltip" data-html="true" data-placement="bottom" title="Enable Auto Cooking. (This makes the milestone pointless, so it is up to you to determine whether that is too cheaty!)"><img src="assets/media/skills/cooking/cooking.svg" height="32px" width="32px"></button>',
+            '<button type="button" data-setting="autoFireEnabled" class="btn btn-outline-primary js-tooltip-enabled auto-loot-button" data-toggle="tooltip" data-html="true" data-placement="bottom" title="Enable Auto Firemaking. (This makes the milestone pointless, so it is up to you to determine whether that is too cheaty!)"><img src="assets/media/skills/firemaking/firemaking.svg" height="32px" width="32px"></button>',
             '</div>',
             '</div>',
 
@@ -166,7 +255,7 @@
         var container = $(html);
         $("#main-container").prepend(container);
         $(".auto-loot-button").on("click", toggleAutoLootSetting);
-        $(".auto-loot-button").popover()
+        $(".auto-loot-button").tooltip()
         $("#auto-loot-run-start").on("click", setRunTimerSetting);
         $("#auto-loot-settings-close").on("click", hideAutoLootSettings);
         return container;
